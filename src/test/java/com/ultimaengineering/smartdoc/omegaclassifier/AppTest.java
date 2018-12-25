@@ -1,7 +1,5 @@
 package com.ultimaengineering.smartdoc.omegaclassifier;
 
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 
 /**

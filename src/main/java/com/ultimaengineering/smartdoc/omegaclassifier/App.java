@@ -6,12 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -21,29 +23,34 @@ import java.util.stream.Collectors;
 @Slf4j
 public class App {
 
-    OmegaTitleClassifier omegaTitleClassifier = new OmegaTitleClassifier();
+    private static final OmegaTitleClassifier omegaTitleClassifier = new OmegaTitleClassifier();
 
     public static void main( String[] args ) {
         try {
             System.out.println("Hello World!");
-            Path titles = Paths.get("F:", "titles");
+            Path titles = Paths.get("C:", "Users", "alexa", "pdfs");
             Set<Path> files = getFiles(titles);
+            files.stream().forEach(App::splitPdf);
         } catch (Exception e) {
             log.error("I don't even know man {}" , e);
         }
     }
 
-    public State classifyImage(BufferedImage bufferedImage) {
+    public static State classifyImage(BufferedImage bufferedImage) {
         State state = omegaTitleClassifier.classifyImage(bufferedImage);
         return state;
     }
 
-    public void splitPdf(Path file) {
+    public static void splitPdf(Path file) {
+        Path titles = Paths.get("C:", "Users", "alexa", "pdfs", "outputImages");
         try(PDDocument document = PDDocument.load(file.toFile())) {
             PDFRenderer pdfRenderer = new PDFRenderer(document);
             List<State> stateList = new ArrayList<>();
             for(int i = 0; i < document.getNumberOfPages(); i++) {
-              log.info(classifyImage(pdfRenderer.renderImageWithDPI(i, 300));
+                //State state = classifyImage(pdfRenderer.renderImageWithDPI(i, 300));
+                Path newImage = Paths.get(titles.toString(), UUID.randomUUID().toString()+".jpg");
+                BufferedImage bufferedImage = pdfRenderer.renderImageWithDPI(i, 300);
+                ImageIO.write(bufferedImage, "jpg", newImage.toFile());
             }
         } catch (Exception e) {
 
